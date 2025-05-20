@@ -1,0 +1,17 @@
+[
+    {
+        "id": 1,
+        "nombre": "Rock",
+        "descripcion": "Género bonito"
+    },
+    {
+        "id": 2,
+        "nombre": "Pop",
+        "descripcion": "Género bonito"
+    },
+    {
+        "id": 3,
+        "nombre": "Jazz",
+        "descripcion": "Género bonito"
+    }
+]

@@ -1,0 +1,50 @@
+[
+    {
+        "nombre": "Dimelo",
+        "id_genero": 2,
+        "duracion": 4,
+        "url": "ajsajsjs",
+        "tipo": "VIRTUAL",
+        "id_album": 1
+    },
+    {
+        "nombre": "Cancion2",
+        "id_genero": 1,
+        "duracion": 20,
+        "url": "asas",
+        "tipo": "VIRTUAL",
+        "id_album": 1
+    },
+    {
+        "nombre": "River",
+        "id_genero": 1,
+        "duracion": 40,
+        "url": "hjhjh",
+        "tipo": "FISICO",
+        "id_album": 1
+    },
+    {
+        "nombre": "nueva cancion",
+        "id_genero": 3,
+        "duracion": 300,
+        "url": "jajaa",
+        "tipo": "VIRTUAL",
+        "id_album": 1
+    },
+    {
+        "nombre": "asa",
+        "id_genero": 2,
+        "duracion": 2,
+        "url": "a",
+        "tipo": "FISICO",
+        "id_album": 1
+    },
+    {
+        "nombre": "River",
+        "id_genero": 2,
+        "duracion": 20,
+        "url": "https://www.youtube.com/watch?v\u003dh5jz8xdpR0M",
+        "tipo": "VIRTUAL",
+        "id_album": 1
+    }
+]
