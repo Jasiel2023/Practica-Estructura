@@ -1,6 +1,6 @@
 package com.estructura.clase.base.models;
 
-public class ArtistaBanda {
+public class Artista_Banda {
     private Integer id;
     private RolArtistaEnum rol;
     private Integer id_artista;

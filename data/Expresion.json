@@ -1,0 +1,12 @@
+[
+    {
+        "id": 1,
+        "expresion": "Camacho",
+        "isCorrecto": true
+    },
+    {
+        "id": 2,
+        "expresion": "jasiel",
+        "isCorrecto": true
+    }
+]

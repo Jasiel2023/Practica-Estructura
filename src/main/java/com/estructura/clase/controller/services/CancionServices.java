@@ -9,12 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.estructura.clase.base.models.Album;
+import com.estructura.clase.base.models.Artista;
 import com.estructura.clase.base.models.Cancion;
 import com.estructura.clase.base.models.Genero;
 import com.estructura.clase.base.models.TipoArchivoEnum;
 import com.estructura.clase.controller.dao.dao_models.DaoAlbum;
 import com.estructura.clase.controller.dao.dao_models.DaoCancion;
 import com.estructura.clase.controller.dao.dao_models.DaoGenero;
+import com.estructura.clase.controller.data_structure.LinkedList;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.hilla.BrowserCallable;
 
@@ -33,6 +35,7 @@ public class CancionServices {
     @NotEmpty String url, @NotEmpty String tipo, Integer id_album) throws Exception {
         if(nombre.trim().length() > 0 && url.trim().length() > 0 && 
         tipo.trim().length() > 0 && duracion > 0 && id_genero > 0 && id_album > 0) {
+            db.getObj().setId(db.listAll().getLength() + 1);
             db.getObj().setNombre(nombre);
             db.getObj().setDuracion(duracion);
             db.getObj().setId_album(id_album);
@@ -65,7 +68,7 @@ public class CancionServices {
             Album [] arreglo = da.listAll().toArray();
             for(int i = 0; i < arreglo.length; i++) {
                 HashMap<String, String> aux = new HashMap<>();
-                aux.put("value", arreglo[i].getId().toString(i)); 
+                aux.put("value", arreglo[i].getId().toString()); 
                 aux.put("label", arreglo[i].getNombre());   
                 lista.add(aux); 
             }
@@ -80,7 +83,7 @@ public class CancionServices {
             Genero [] arreglo = da.listAll().toArray();
             for(int i = 0; i < arreglo.length; i++) {
                 HashMap<String, String> aux = new HashMap<>();
-                aux.put("value", arreglo[i].getId().toString(i)); 
+                aux.put("value", arreglo[i].getId().toString()); 
                 aux.put("label", arreglo[i].getNombre()); 
                 lista.add(aux);  
             }
@@ -98,28 +101,24 @@ public class CancionServices {
 
     
 
-    public List<Cancion> listAll() {
-        return Arrays.asList(db.listAll().toArray());
+
+     public List<HashMap> listAll() throws Exception {
+       return  Arrays.asList(db.all().toArray());
+    }
+
+
+      public List<HashMap> order(String attribute, Integer type) throws Exception {
+            return Arrays.asList(db.orderByArtist(type, attribute).toArray());
+       
 
     }
-    public List<HashMap> listCancion(){
-        List<HashMap> lista = new ArrayList<>();
-        if(!db.listAll().isEmpty()) {
-            Cancion [] arreglo = db.listAll().toArray();           
-            for(int i = 0; i < arreglo.length; i++) {
-                
-                HashMap<String, String> aux = new HashMap<>();
-                aux.put("id", arreglo[i].getId().toString(i));                
-                aux.put("nombre", arreglo[i].getNombre());
-                aux.put("genero", new DaoGenero().listAll().get(arreglo[i].getId_genero() -1).getNombre());
-                aux.put("id_genero", new DaoGenero().listAll().get(arreglo[i].getId_genero() -1).getId().toString());
-                aux.put("album", new DaoAlbum().listAll().get(arreglo[i].getId_album() -1).getNombre());
-                aux.put("id_album", new DaoAlbum().listAll().get(arreglo[i].getId_album() -1).getId().toString());
-                aux.put("url", arreglo[i].getUrl());
-                aux.put("tipo", arreglo[i].getTipo().toString());
-                lista.add(aux);
-            }
-        }
-        return lista;
+
+     public List<HashMap> search(String attribute, String text, Integer type) throws Exception {
+        LinkedList<HashMap<String, String>> lista = db.search(attribute, text, type);
+        if(!lista.isEmpty())
+            return Arrays.asList(lista.toArray());
+        else
+            return new ArrayList<>();
     }
+
 }

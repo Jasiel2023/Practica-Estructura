@@ -1,18 +1,23 @@
 [
     {
         "id": 1,
-        "nombre": "Snupi",
-        "fechaCreacion": "Jan 10, 1973, 02:30:00 PM"
+        "nombre": "Snupi"
     },
     {
         "id": 2,
-        "nombre": "Lagartos",
-        "fechaCreacion": "Oct 16, 1968, 03:15:00 PM"
+        "nombre": "Lagartos"
     },
     {
         "id": 3,
-        "nombre": "Los Angeles Azules",
-        "fechaCreacion": "Jul 20, 1980, 04:00:00 PM"
-        
+        "nombre": "Los Angeles Azules"
+    },
+    {
+        "id": 4,
+        "nombre": "Los Bukis",
+        "fecha": "mar 15, 3922"
+    },
+    {
+        "nombre": "Alxa",
+        "fecha": "jun 16, 2025"
     }
 ]

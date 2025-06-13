@@ -52,35 +52,24 @@ public class DaoGenero extends AdapterDao<Genero> {
 
     public static void main(String[] args) {
         DaoGenero da = new DaoGenero();
-
-        // Primer género (Rock)
         da.getObj().setId(da.listAll().getLength() + 1);
-        da.getObj().setNombre("Rock");
+        da.getObj().setNombre("Cumbia");
 
         if (da.save()) {
-            System.out.println("Rock - Guardado");
+            System.out.println("Guardado");
         } else {
-            System.out.println("Error al guardar Rock");
+            System.out.println("Error al guardar");
         }
-
-        // Segundo género (Pop)
+        
         da.getObj().setId(da.listAll().getLength() + 1);
-        da.getObj().setNombre("Pop");
+        da.getObj().setNombre("Vallenato");
 
         if (da.save()) {
-            System.out.println("Pop - Guardado");
+            System.out.println("Guardado");
         } else {
-            System.out.println("Error al guardar Pop");
+            System.out.println("Error al guardar");
         }
 
-        // Tercer género (Jazz)
-        da.getObj().setId(da.listAll().getLength() + 1);
-        da.getObj().setNombre("Jazz");
-
-        if (da.save()) {
-            System.out.println("Jazz - Guardado");
-        } else {
-            System.out.println("Error al guardar Jazz");
-        }
+    
     }
 }

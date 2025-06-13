@@ -7,6 +7,7 @@ import handleError from 'Frontend/views/_ErrorHandler';
 import { Group, ViewToolbar } from 'Frontend/components/ViewToolbar';
 import Task from 'Frontend/generated/com/estructura/clase/taskmanagement/domain/Task';
 import { useDataProvider } from '@vaadin/hilla-react-crud';
+import { useCallback, useEffect, useState } from 'react';
 
 
 import { BandaService } from 'Frontend/generated/endpoints';
@@ -22,15 +23,14 @@ export const config: ViewConfig = {
   },
 };
 
-
 type BandaEntryFormProps = {
   onBandaCreated?: () => void;
 };
 
-type BandaEntryFormUpdateProps = {
-  onBandaUpdate?: () => void;
+type BandaEntryFormUpdateProps =  {
+  onBandaUpdated?: () => void;
 };
-
+//BANDA CREATE
 function BandaEntryForm(props: BandaEntryFormProps) {
   const dialogOpened = useSignal(false);
 
@@ -46,24 +46,24 @@ function BandaEntryForm(props: BandaEntryFormProps) {
   const fecha = useSignal('');
 
   const createBanda = async () => {
-        try {
-          if (nombre.value.trim().length > 0 && fecha.value.trim().length > 0) {
-            await BandaService.createBanda(nombre.value, fecha.value);
-            if (props.onBandaCreated) {
-              props.onBandaCreated()
-            }
-            nombre.value = '';
-            fecha.value = '';
-            dialogOpened.value = false;
-            Notification.show('Banda creada exitosamente', {duration: 3000, position: 'bottom-end', theme:'sucess'})
+      try {
+        if (nombre.value.trim().length > 0 && fecha.value.trim().length > 0) {
+          await BandaService.createBanda(nombre.value, fecha.value);
+          if (props.onBandaCreated) {
+            props.onBandaCreated();
           }
-          else{
-            Notification.show('No se pudo crear, faltan datos', { duration: 3000, position:'top-center', theme:'error'})
-          }
-        } catch (error) {
-          console.log(error);
-          handleError(error);
+          nombre.value = '';
+          fecha.value = '';
+          dialogOpened.value = false;
+          Notification.show('Banda creada exitosamente', { duration: 5000, position: 'bottom-end', theme: 'success' });
+        } else {
+          Notification.show('No se pudo crear, faltan datos', { duration: 5000, position: 'top-center', theme: 'error' });
         }
+  
+      } catch (error) {
+        console.log(error);
+        handleError(error);
+      }
     };
 
   return (
@@ -106,14 +106,13 @@ function BandaEntryForm(props: BandaEntryFormProps) {
         >
           <VerticalLayout style={{ alignItems: 'stretch' }}>
             <TextField label="Nombre"
-              placeholder='Ingrese nombre de la banda'
-              aria-label='INgrese el nombre de la banda' 
+              placeholder='Ingrese el nombre de la banda'
+              aria-label='Ingrese el nombre de la banda'
               value={nombre.value}
               onValueChanged={(evt) => (nombre.value = evt.detail.value)}
-          
-              />
+            />
             <DatePicker
-            label="Fecha de Creacion"
+              label="Fecha de creacion"
               placeholder="Seleccione una fecha"
               aria-label="Seleccione una fecha"
               value={fecha.value}
@@ -127,10 +126,9 @@ function BandaEntryForm(props: BandaEntryFormProps) {
   );
 }
 
-
-
 //UPDATE BANDA
 function BandaEntryFormUpdate(props: BandaEntryFormUpdateProps) {
+  //console.log(props);
   const dialogOpened = useSignal(false);
 
   const open = () => {
@@ -141,28 +139,30 @@ function BandaEntryFormUpdate(props: BandaEntryFormUpdateProps) {
     dialogOpened.value = false;
   };
 
-  const nombre = useSignal('');
-  const fecha = useSignal('');
-
+  const nombre = useSignal(props.arguments.nombre);
+  const fecha = useSignal(props.arguments.fecha);
+  const ident = useSignal(props.arguments.id);
+  
   const updateBanda = async () => {
-        try {
-          if (nombre.value.trim().length > 0 && fecha.value.trim().length > 0) {
-            await BandaService.createBanda(nombre.value, fecha.value);
-            if (props.onBandaUpdate) {
-              props.onBandaUpdate()
-            }
-            nombre.value = '';
-            fecha.value = '';
-            dialogOpened.value = false;
-            Notification.show('Banda creada exitosamente', {duration: 3000, position: 'bottom-end', theme:'sucess'})
+      try {
+        if (nombre.value.trim().length > 0 && fecha.value.trim().length > 0) {
+          console.log(parseInt(ident.value)+" *********");
+          await BandaService.updateBanda(parseInt(ident.value), nombre.value, fecha.value);
+          if (props.onBandaUpdated) {
+            props.onBandaUpdated();
           }
-          else{
-            Notification.show('No se pudo crear, faltan datos', { duration: 3000, position:'top-center', theme:'error'})
-          }
-        } catch (error) {
-          console.log(error);
-          handleError(error);
+          nombre.value = '';
+          fecha.value = '';
+          dialogOpened.value = false;
+          Notification.show('Banda creada exitosamente', { duration: 5000, position: 'bottom-end', theme: 'success' });
+        } else {
+          Notification.show('No se pudo crear, faltan datos', { duration: 5000, position: 'top-center', theme: 'error' });
         }
+  
+      } catch (error) {
+        console.log(error);
+        handleError(error);
+      }
     };
 
   return (
@@ -194,7 +194,7 @@ function BandaEntryFormUpdate(props: BandaEntryFormUpdateProps) {
           <>
             <Button onClick={close}>Cancelar</Button>
             <Button theme="primary" onClick={updateBanda}>
-              Acrualizar
+              Actualizar
             </Button>
           </>
         )}
@@ -205,14 +205,13 @@ function BandaEntryFormUpdate(props: BandaEntryFormUpdateProps) {
         >
           <VerticalLayout style={{ alignItems: 'stretch' }}>
             <TextField label="Nombre"
-              placeholder='Ingrese nombre de la banda'
-              aria-label='INgrese el nombre de la banda' 
+              placeholder='Ingrese el nombre de la banda'
+              aria-label='Ingrese el nombre de la banda'
               value={nombre.value}
               onValueChanged={(evt) => (nombre.value = evt.detail.value)}
-          
-              />
+            />
             <DatePicker
-            label="Fecha de Creacion"
+              label="Fecha de creacion"
               placeholder="Seleccione una fecha"
               aria-label="Seleccione una fecha"
               value={fecha.value}
@@ -221,13 +220,11 @@ function BandaEntryFormUpdate(props: BandaEntryFormUpdateProps) {
           </VerticalLayout>
         </VerticalLayout>
       </Dialog>
-      <Button onClick={open}>Registrar</Button>
+      <Button onClick={open}>Editar</Button>
     </>
   );
 }
-
-
-
+//*************************** */
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'medium',
@@ -243,19 +240,18 @@ function index({ model }: { model: GridItemModel<Banda> }) {
   );
 }
 
-function link({ item }: { item: Banda }) {
+export default function BandaListView() {
+  const dataProvider = useDataProvider<Banda>({
+    list: () => BandaService.listAllBanda(),
+  });
+
+  function link({ item }: { item: Banda }) {
   return (
     <span>
-      <BandaEntryFormUpdate arguments= {item} onBandaUpdate ={dataProvider.refresh}/>
+      <BandaEntryFormUpdate arguments={item}  onBandaUpdated={dataProvider.refresh}/>
     </span>
   );
 }
-
-
-export default function BandaView() {
-  const dataProvider = useDataProvider<Banda>({
-    list: () => BandaService.listAll(),
-  });
 
   return (
     <main className="w-full h-full flex flex-col box-border gap-s p-m">
@@ -275,4 +271,3 @@ export default function BandaView() {
     </main>
   );
 }
-

@@ -1,17 +1,22 @@
 [
     {
         "id": 1,
-        "nombre": "Rock",
-        "descripcion": "Género bonito"
+        "nombre": "Rock"
     },
     {
         "id": 2,
-        "nombre": "Pop",
-        "descripcion": "Género bonito"
+        "nombre": "Pop"
     },
     {
         "id": 3,
-        "nombre": "Jazz",
-        "descripcion": "Género bonito"
+        "nombre": "Jazz"
+    },
+    {
+        "id": 4,
+        "nombre": "Cumbia"
+    },
+    {
+        "id": 5,
+        "nombre": "Vallenato"
     }
 ]

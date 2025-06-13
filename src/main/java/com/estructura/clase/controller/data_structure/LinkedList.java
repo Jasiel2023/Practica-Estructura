@@ -202,20 +202,18 @@ public class LinkedList<E> {
     }
 
     public E[] toArray() {
-        if (isEmpty()) {
-            return null;
+       Class clazz = null;
+        E[] matriz = null;
+        if (this.length > 0) {
+            clazz = head.getData().getClass();
+            matriz = (E[]) java.lang.reflect.Array.newInstance(clazz, this.length);
+            Node<E> aux = head;
+            for (int i = 0; i < length; i++) {
+                matriz[i] = aux.getData();
+                aux = aux.getNext();
+            }
         }
-
-        @SuppressWarnings("unchecked")
-        E[] array = (E[]) java.lang.reflect.Array.newInstance(
-                head.getData().getClass(), length);
-
-        Node<E> current = head;
-        for (int i = 0; i < length; i++) {
-            array[i] = current.getData();
-            current = current.getNext();
-        }
-        return array;
+        return matriz;
     }
 
     public LinkedList<E> toList(E[] matriz) {

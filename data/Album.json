@@ -1,1 +1,33 @@
-[{"id":1,"nombre":"Album 1","Fecha":"nov 10, 3923","id_banda":1}]
+[
+    {
+        "id": 1,
+        "nombre": "Album 1",
+        "Fecha": "nov 10, 23",
+         "id_banda": 1
+      },
+       {
+        "id": 2,
+        "nombre": "El Amor de mi Tierra",
+        "Fecha": "nov 02, 23",
+         "id_banda": 1
+      },
+       {
+        "id": 3,
+        "nombre": "Cumbias con Sabor",
+        "Fecha": "nov 02, 2005",
+         "id_banda": 1
+      },
+      {
+        "id": 4,
+        "nombre": "Barrio Bravo",
+        "Fecha": "nov 02, 2001",
+         "id_banda": 1
+      },
+       {
+        "id": 5,
+        "nombre": "Clasicos de la ProvinciaII",
+        "Fecha": "nov 02, 2009",
+         "id_banda": 1
+      }
+
+]

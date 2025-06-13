@@ -1,5 +1,5 @@
 import { ViewConfig } from '@vaadin/hilla-file-router/types.js';
-import { Button, ComboBox, DatePicker, Dialog, Grid, GridColumn, GridItemModel, TextField, VerticalLayout } from '@vaadin/react-components';
+import { Button, ComboBox, DatePicker, Dialog, Grid, GridColumn, GridItemModel, GridSortColumn, TextField, VerticalLayout } from '@vaadin/react-components';
 import { Notification } from '@vaadin/react-components/Notification';
 
 import { useSignal } from '@vaadin/hilla-react-signals';
@@ -10,36 +10,32 @@ import { useDataProvider } from '@vaadin/hilla-react-crud';
 import { ArtistaService } from 'Frontend/generated/endpoints';
 
 import Artista from 'Frontend/generated/com/estructura/clase/base/models/Artista';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 
 export const config: ViewConfig = {
   title: 'Artistas',
   menu: {
     icon: 'vaadin:clipboard-check',
-    order: 3,
+    order: 1,
     title: 'Artistas',
   },
 };
 
-// Formulario para registrar nuevo artista
+
+
+
 type ArtistaEntryFormProps = {
   onArtistaCreated?: () => void;
 };
 
-// Formulario para actualizar artista
-type ArtistaEntryFormUpdateProps ={
-  id: number;
-  nombre: string;
-  nacionalidad: string;
+type ArtistaEntryFormPropsUpdate = () => {
   onArtistaUpdated?: () => void;
 };
 
-//GUARDAR ARTISTA
 function ArtistaEntryForm(props: ArtistaEntryFormProps) {
   const nombre = useSignal('');
   const nacionalidad = useSignal('');
-  
   const createArtista = async () => {
     try {
       if (nombre.value.trim().length > 0 && nacionalidad.value.trim().length > 0) {
@@ -60,7 +56,7 @@ function ArtistaEntryForm(props: ArtistaEntryFormProps) {
       handleError(error);
     }
   };
-  
+
   let pais = useSignal<String[]>([]);
   useEffect(() => {
     ArtistaService.listCountry().then(data =>
@@ -84,185 +80,178 @@ function ArtistaEntryForm(props: ArtistaEntryFormProps) {
                 dialogOpened.value = false;
               }}
             >
-              Cancelar
+              Candelar
             </Button>
             <Button onClick={createArtista} theme="primary">
               Registrar
             </Button>
-            
+
           </>
         }
       >
         <VerticalLayout style={{ alignItems: 'stretch', width: '18rem', maxWidth: '100%' }}>
-          <TextField label="Nombre del artista" 
+          <TextField label="Nombre del artista"
             placeholder="Ingrese el nombre del artista"
             aria-label="Nombre del artista"
             value={nombre.value}
             onValueChanged={(evt) => (nombre.value = evt.detail.value)}
           />
-          <ComboBox label="Nacionalidad" 
+          <ComboBox label="Nacionalidad"
             items={pais.value}
             placeholder='Seleccione un pais'
             aria-label='Seleccione un pais de la lista'
             value={nacionalidad.value}
             onValueChanged={(evt) => (nacionalidad.value = evt.detail.value)}
-            />
+          />
         </VerticalLayout>
       </Dialog>
       <Button
-            onClick={() => {
-              dialogOpened.value = true;
-            }}
-          >
-            Agregar
-          </Button>
+        onClick={() => {
+          dialogOpened.value = true;
+        }}
+      >
+        Agregar
+      </Button>
     </>
   );
 }
 
-
-// Update artista
-function ArtistaEntryFormUpdate(props: ArtistaEntryFormUpdateProps) {
-  const dialogOpened = useSignal(false);
-  const nombre = useSignal(props.nombre);
-  const nacionalidad = useSignal(props.nacionalidad);
-  const ident = useSignal(props.id);
-
-  // Sincroniza los valores cuando cambian las props
+//GUARDAR ARTISTA
+const ArtistaEntryFormUpdate = function (props: ArtistaEntryFormPropsUpdate) {//useCallback((props: ArtistaEntryFormPropsUpdate,{ item: art }: { item: Artista }) => {
+  console.log(props);
+  let pais = useSignal<String[]>([]);
   useEffect(() => {
-    nombre.value = props.nombre;
-    nacionalidad.value = props.nacionalidad;
-    ident.value = props.id;
-  }, [props.nombre, props.nacionalidad, props.id]);
-
-
-  const open = () => {
-    dialogOpened.value = true;
-  };
-
-  const close = () => {
-    dialogOpened.value = false;
-  };
-
-  const updateArtista = async () => {
+    ArtistaService.listCountry().then(data =>
+      pais.value = data
+    );
+  }, []);
+  const nombre = useSignal(props.arguments.nombres);
+  const nacionalidad = useSignal(props.arguments.nacionalidad);
+  const createArtista = async () => {
     try {
       if (nombre.value.trim().length > 0 && nacionalidad.value.trim().length > 0) {
-        await ArtistaService.updateArtista(parseInt(ident.value), nombre.value, nacionalidad.value);
-        if (props.onArtistaUpdated) {
-          props.onArtistaUpdated();
+        await ArtistaService.aupdateArtista(props.arguments.id, nombre.value, nacionalidad.value);
+        if (props.arguments.onArtistaUpdated) {
+          props.arguments.onArtistaUpdated();
         }
+        nombre.value = '';
+        nacionalidad.value = '';
         dialogOpened.value = false;
-        Notification.show('Artista actualizado', { 
-          duration: 5000, 
-          position: 'bottom-end', 
-          theme: 'success' 
-        });
+        Notification.show('Artista creado', { duration: 5000, position: 'bottom-end', theme: 'success' });
       } else {
-        Notification.show('No se pudo actualizar, faltan datos', { 
-          duration: 5000, 
-          position: 'top-center', 
-          theme: 'error' 
-        });
+        Notification.show('No se pudo crear, faltan datos', { duration: 5000, position: 'top-center', theme: 'error' });
       }
+
     } catch (error) {
       console.log(error);
       handleError(error);
     }
   };
 
-  let pais = useSignal<String[]>([]);
-  useEffect(() => {
-    ArtistaService.listCountry().then(data => pais.value = data);
-  }, []);
 
+  const dialogOpened = useSignal(false);
   return (
     <>
       <Dialog
-        aria-label="Editar Artista"
-        draggable
         modeless
+        headerTitle="Actualizar artista"
         opened={dialogOpened.value}
-        onOpenedChanged={(event) => {
-          dialogOpened.value = event.detail.value;
+        onOpenedChanged={({ detail }) => {
+          dialogOpened.value = detail.value;
         }}
-        header={
-          <h2
-            className="draggable"
-            style={{
-              flex: 1,
-              cursor: 'move',
-              margin: 0,
-              fontSize: '1.5em',
-              fontWeight: 'bold',
-              padding: 'var(--lumo-space-m) 0',
-            }}
-          >
-            Editar Artista
-          </h2>
-        }
-        footerRenderer={() => (
+        footer={
           <>
-            <Button onClick={close}>Cancelar</Button>
-            <Button theme="primary" onClick={updateArtista}>
-              Actualizar
+            <Button
+              onClick={() => {
+                dialogOpened.value = false;
+              }}
+            >
+              Candelar
             </Button>
+            <Button onClick={createArtista} theme="primary">
+              Registrar
+            </Button>
+
           </>
-        )}
+        }
       >
-        <VerticalLayout
-          theme="spacing"
-          style={{ width: '300px', maxWidth: '100%', alignItems: 'stretch' }}
-        >
-          <VerticalLayout style={{ alignItems: 'stretch' }}>
-            <TextField 
-              label="Nombre del artista" 
-              placeholder="Ingrese el nombre del artista"
-              aria-label="Nombre del artista"
-              value={nombre.value}
-              onValueChanged={(evt) => (nombre.value = evt.detail.value)}
-            />
-            <ComboBox 
-              label="Nacionalidad" 
-              items={pais.value}
-              placeholder='Seleccione un país'
-              aria-label='Seleccione un país de la lista'
-              value={nacionalidad.value}
-              onValueChanged={(evt) => (nacionalidad.value = evt.detail.value)}
-            />
-          </VerticalLayout>
+        <VerticalLayout style={{ alignItems: 'stretch', width: '18rem', maxWidth: '100%' }}>
+          <TextField label="Nombre del artista"
+            placeholder="Ingrese el nombre del artista"
+            aria-label="Nombre del artista"
+            value={nombre.value}
+            onValueChanged={(evt) => (nombre.value = evt.detail.value)}
+          />
+          <ComboBox label="Nacionalidad"
+            items={pais.value}
+            placeholder='Seleccione un pais'
+            aria-label='Seleccione un pais de la lista'
+            value={nacionalidad.value}
+            defaultValue={nacionalidad.value}
+
+
+            onValueChanged={(evt) => (nacionalidad.value = evt.detail.value)}
+          />
         </VerticalLayout>
       </Dialog>
-      <Button onClick={open}>Editar</Button>
+      <Button
+        onClick={() => {
+          dialogOpened.value = true;
+        }}
+      >
+        Editar
+      </Button>
     </>
   );
-}
+};
 
-////********************************* */
 
 //LISTA DE ARTISTAS
 export default function ArtistaView() {
+  const [items, setItems] = useState([]);
+  const callData = () => {
+    console.log("Hola call data");
+    ArtistaService.listAll().then(function(data){
+      //items.values = data;
+      setItems(data);
+    });
+  };
+  useEffect(() => {
+    callData();
+  },[]);
   
-  const dataProvider = useDataProvider<Artista>({
+  
+  /*let dataProvider = useDataProvider<Artista>({
     list: () => ArtistaService.listAll(),
-  });
+  });*/
 
-function indexLink({ item }: { item: Artista }) {
-  return (
-    <span>
-      <ArtistaEntryFormUpdate
-        id={item.id}
-        nombre={item.nombre}
-        nacionalidad={item.nacionalidad}
-        onArtistaUpdated={dataProvider.refresh}
-      />
-    </span>
-  );
-}
+  const order = (event, columnId) => {
+    console.log(event);
+    const direction = event.detail.value;
+    // Custom logic based on the sorting direction
+    console.log(`Sort direction changed for column ${columnId} to ${direction}`);
 
-  function indexIndex({model}:{model:GridItemModel<Artista>}) {
+    var dir = (direction == 'asc') ? 1 : 2;
+    ArtistaService.order(columnId, dir).then(function (data) {
+      setItems(data);
+    });  
+  }
+
+  function indexLink({ item }: { item: Artista }) {
+
     return (
       <span>
-        {model.index + 1} 
+        <ArtistaEntryFormUpdate  arguments={item}  onArtistaUpdated={callData}>
+
+        </ArtistaEntryFormUpdate>
+      </span>
+    );
+  }
+
+  function indexIndex({ model }: { model: GridItemModel<Artista> }) {
+    return (
+      <span>
+        {model.index + 1}
       </span>
     );
   }
@@ -273,17 +262,18 @@ function indexLink({ item }: { item: Artista }) {
 
       <ViewToolbar title="Lista de artista">
         <Group>
-          <ArtistaEntryForm onArtistaCreated={dataProvider.refresh}/>
+          <ArtistaEntryForm onArtistaCreated={callData}/>
         </Group>
       </ViewToolbar>
-      <Grid dataProvider={dataProvider.dataProvider}>
-        <GridColumn  renderer={indexIndex} header="Nro" />
-        <GridColumn path="nombre" header="Nombre del artista" />
-        <GridColumn path="nacionalidad" header="Nacionalidad">
+      <Grid items={items}>
+        <GridColumn renderer={indexIndex} header="Nro" />
+        <GridSortColumn path="nombre" header="Nombre del artista" onDirectionChanged={(e) => order(e, 'nombre')} />
+        <GridSortColumn path="nacionalidad" header="Nacionalidad" onDirectionChanged={(e) => order(e, 'nacionalidad')} />
 
-        </GridColumn>
-        <GridColumn header="Acciones" renderer={indexLink}/>
+        
+        <GridColumn header="Acciones" renderer={indexLink} />
       </Grid>
+      
     </main>
   );
 }
